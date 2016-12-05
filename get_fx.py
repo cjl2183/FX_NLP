@@ -26,7 +26,7 @@ def get_fx(ACCESS_KEY, url, start, end):
 		rate = 1/float(parsed['quotes']['USDGBP'])
 		prices = np.append(prices,rate)
 	df_fx = pd.Series(prices,index=rng[::-1])
-	df_fx.to_csv('GBPUSD.csv')
+	df_fx.to_csv('GBPUSD_delt.csv')
 	return prices
 
 if __name__ == '__main__':
