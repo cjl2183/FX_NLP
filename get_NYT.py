@@ -11,10 +11,10 @@ import datetime
 import json
 
 def get_NYT(start, end):
-    NYT_ARTICLE = 'deffb8ca21824660b6e431b160550918'
-    NYT_SEMANTIC = 'deffb8ca21824660b6e431b160550918'
-    #api = nytimesarticle.search()
-    api = nytimesarticle.articleAPI(NYT_ARTICLE)
+    with open('nyt_keys.json') as key:
+        nyt_creds = json.load(key)
+
+    api = nytimesarticle.articleAPI(nyt_creds['NYT_ARTICLE'])
     start_dt = pd.to_datetime(start).date()
     end_dt = pd.to_datetime(end).date()
     num_days = (end_dt - start_dt).days
@@ -23,8 +23,6 @@ def get_NYT(start, end):
         dt = start_dt + datetime.timedelta(i)
         dt_start = str(dt.year)+str(dt.month).zfill(2)+str(dt.day).zfill(2)
         dt_end = str(dt.year)+str(dt.month).zfill(2)+str(dt.day+1).zfill(2)
-        #print dt_start
-        #print dt_end
         result = api.search(q = 'brexit', fq = {'source':['Reuters','AP', 'The New York Times'],\
                                                   'news_desk':["Foreign","Business","Financial","Market Place","World"],
                                                   'document_type':"article"}, begin_date = dt_start, end_date = dt_start, \
@@ -37,14 +35,11 @@ def get_NYT(start, end):
                     if k == unicode('docs'):
                         for doc in result[r][k]:
                             articles.append(doc)
-        #print len(articles)
                             
     dates = []
     corpus = []
-    print len(articles)
     for art in articles:
         r = requests.get(art[unicode('web_url')])
-        #print r
         tree = html.fromstring(r.content)
         contents = tree.xpath('//p[@class="story-body-text story-content"]/text()')
         body = []
